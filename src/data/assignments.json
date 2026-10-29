@@ -1,0 +1,38 @@
+[
+  {
+    "id": "ASN-001",
+    "course_id": "CS101",
+    "course_name": "Sistem Terdistribusi",
+    "title": "Tugas 1: Socket Programming",
+    "description": "Implementasikan client-server berbasis TCP/UDP socket untuk pertukaran pesan.",
+    "due_date": "2026-11-05T23:59:00Z",
+    "max_points": 100,
+    "status": "OPEN",
+    "created_at": "2026-10-25T08:00:00.000Z",
+    "updated_at": "2026-10-25T08:00:00.000Z"
+  },
+  {
+    "id": "ASN-002",
+    "course_id": "CS101",
+    "course_name": "Sistem Terdistribusi",
+    "title": "Tugas 2: RPC & RESTful Microservices",
+    "description": "Rancang komunikasi antar layanan independen dengan format JSON dan HTTP method.",
+    "due_date": "2026-11-12T23:59:00Z",
+    "max_points": 100,
+    "status": "OPEN",
+    "created_at": "2026-10-26T10:30:00.000Z",
+    "updated_at": "2026-10-26T10:30:00.000Z"
+  },
+  {
+    "id": "ASN-003",
+    "course_id": "CS102",
+    "course_name": "Keamanan Jaringan",
+    "title": "Tugas Analisis Paket Wireshark",
+    "description": "Analisis payload traffic HTTP vs HTTPS pada jaringan lokal.",
+    "due_date": "2026-11-20T23:59:00Z",
+    "max_points": 90,
+    "status": "CLOSED",
+    "created_at": "2026-10-20T09:15:00.000Z",
+    "updated_at": "2026-10-28T14:00:00.000Z"
+  }
+]

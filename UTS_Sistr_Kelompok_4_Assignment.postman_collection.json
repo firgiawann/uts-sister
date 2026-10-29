@@ -1,0 +1,382 @@
+{
+	"info": {
+		"_postman_id": "b7891234-a456-4789-9abc-kelompok4uts",
+		"name": "UTS Sistem Terdistribusi - Kelompok 4 (Assignment Service)",
+		"description": "Koleksi API Postman untuk demonstrasi UTS Sistem Terdistribusi.\nKelompok 4: Assignment Service (PHP Native).\nTerhubung ke Kelompok 1 (API Gateway - 8101), Kelompok 3 (Course - 8103), Kelompok 5 (Submission - 8105), dan Kelompok 7 (Monitoring /health).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Kelompok 7 - Monitoring (/health)",
+			"item": [
+				{
+					"name": "Health Check (Kelompok 7)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Endpoint yang dipolling oleh Kelompok 7 (Monitoring Service) untuk memeriksa status UP layanan dan koneksi dependensi."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Assignment Service (CRUD Minimal 3 Fungsi)",
+			"item": [
+				{
+					"name": "GET - List All Assignments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/assignments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"assignments"
+							]
+						},
+						"description": "Mengambil semua daftar tugas assignment yang tersedia."
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Filter Assignment by Course Code (PTIK301)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/assignments?course_id=PTIK301",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"assignments"
+							],
+							"query": [
+								{
+									"key": "course_id",
+									"value": "PTIK301"
+								}
+							]
+						},
+						"description": "Mengambil tugas yang difilter berdasarkan kode mata kuliah dari Kelompok 3 (misal: PTIK301 - Sistem Terdistribusi)."
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Detail Assignment by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/assignments/ASN-001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"assignments",
+								"ASN-001"
+							]
+						},
+						"description": "Mengambil detail lengkap 1 tugas berdasarkan ID (misal: ASN-001)."
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Create New Assignment (Verifikasi ke Kelompok 3)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course_id\": \"PTIK301\",\n    \"title\": \"Tugas 3: Integrasi Microservices UTS\",\n    \"description\": \"Demonstrasikan aliran data Client -> Gateway -> Course -> Assignment -> Submission -> Notification.\",\n    \"due_date\": \"2026-11-15 23:59:00\",\n    \"max_points\": 100,\n    \"status\": \"OPEN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/assignments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"assignments"
+							]
+						},
+						"description": "Membuat tugas baru. Kelompok 4 akan menghubungi Kelompok 3 (Course Service) untuk memverifikasi course_id PTIK301. Jika Kelompok 3 belum aktif, otomatis menggunakan mock fallback."
+					},
+					"response": []
+				},
+				{
+					"name": "PUT - Update Assignment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Tugas 1: Socket Programming Client-Server (Revisi)\",\n    \"description\": \"Ditambahkan ketentuan laporan pengujian wireshark.\",\n    \"max_points\": 100,\n    \"status\": \"OPEN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/assignments/ASN-001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"assignments",
+								"ASN-001"
+							]
+						},
+						"description": "Memperbarui data tugas yang sudah ada."
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Delete Assignment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/assignments/ASN-003",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"assignments",
+								"ASN-003"
+							]
+						},
+						"description": "Menghapus assignment berdasarkan ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Integrasi ke Kelompok 3 (Course)",
+			"item": [
+				{
+					"name": "GET - Tarik Live Courses dari Kelompok 3",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/external/courses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"external",
+								"courses"
+							]
+						},
+						"description": "Kelompok 4 menarik seluruh daftar mata kuliah langsung dari Kelompok 3 (GET /api/courses di port 8103)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Integrasi ke Kelompok 5 (Submission)",
+			"item": [
+				{
+					"name": "GET - Ambil Submissions dari Kelompok 5",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/assignments/ASN-001/submissions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"assignments",
+								"ASN-001",
+								"submissions"
+							]
+						},
+						"description": "Kelompok 4 meneruskan permintaan ke Kelompok 5 (Submission Service) untuk mengambil data pengumpulan tugas ASN-001."
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Unggah Submission Tugas ke Kelompok 5 (Trigger K6 Notifikasi)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "student_id",
+									"value": "2209106001",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/assignments/ASN-001/submissions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"assignments",
+								"ASN-001",
+								"submissions"
+							]
+						},
+						"description": "Mengunggah file submission mahasiswa. Kelompok 4 meneruskannya ke Kelompok 5, dan Kelompok 5 otomatis meneruskannya ke Kelompok 6 (Notification)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Konfigurasi IP Jaringan Lokal (Kelompok 1, 3, 5)",
+			"item": [
+				{
+					"name": "GET - Lihat Konfigurasi IP Kelompok Lain",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"config"
+							]
+						},
+						"description": "Melihat daftar IP/URL target untuk Kelompok 1, Kelompok 3, dan Kelompok 5."
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Update IP Perangkat Kelompok 3 & 5",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kelompok_1_gateway_url\": \"http://192.168.1.10:8101\",\n    \"kelompok_3_course_url\": \"http://192.168.1.8:8103\",\n    \"kelompok_5_submission_url\": \"http://192.168.1.15:8105\",\n    \"use_mock_fallback\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"config"
+							]
+						},
+						"description": "Mengubah IP target secara dinamis ketika teman sekelompok mendapatkan IP baru di Wi-Fi kelas/lab tanpa perlu restart server."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:4000",
+			"type": "string"
+		}
+	]
+}

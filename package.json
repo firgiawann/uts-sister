@@ -1,0 +1,24 @@
+{
+  "name": "kelompok4-assignment-service",
+  "version": "1.0.0",
+  "description": "Layanan Assignment (Kelompok 4) - Sistem Terdistribusi UTS",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "sistem-terdistribusi",
+    "assignment-service",
+    "microservice",
+    "kelompok-4"
+  ],
+  "author": "Kelompok 4",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

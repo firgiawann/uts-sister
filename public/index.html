@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduDistro LMS — Kelompok 4 Assignment Service | Sistem Terdistribusi</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="lms-wrapper">
+        <!-- TOP NAVIGATION BAR -->
+        <nav class="lms-navbar">
+            <div class="nav-left">
+                <div class="lms-brand">
+                    <div class="brand-icon">🎓</div>
+                    <div class="brand-text">
+                        <span class="brand-title">EduDistro <span>LMS</span></span>
+                        <span class="brand-sub">Portal Tugas Terdistribusi — Kelompok 4</span>
+                    </div>
+                </div>
+                <div class="nav-tabs">
+                    <button class="nav-tab active" onclick="switchTab('tab-assignments')">
+                        <span class="tab-icon">📝</span> Tugas Kuliah
+                    </button>
+                    <button class="nav-tab" onclick="switchTab('tab-courses')">
+                        <span class="tab-icon">📚</span> Mata Kuliah (K3)
+                    </button>
+                    <button class="nav-tab" onclick="switchTab('tab-network')">
+                        <span class="tab-icon">🌐</span> Koneksi Terdistribusi
+                    </button>
+                    <button class="nav-tab" onclick="switchTab('tab-console')">
+                        <span class="tab-icon">⚡</span> Konsol API
+                    </button>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <div class="role-selector" onclick="toggleRole()" title="Klik untuk beralih mode peran">
+                    <span class="role-avatar" id="role-icon">👨‍🎓</span>
+                    <div class="role-info">
+                        <span class="role-title" id="role-title">Mahasiswa</span>
+                        <span class="role-sub">Klik ganti Dosen</span>
+                    </div>
+                </div>
+
+                <div class="connection-badge" id="service-status-pill" title="Server PHP Built-in Aktif">
+                    <span class="status-dot pulse"></span>
+                    <span class="badge-text">PORT 8104/4000</span>
+                </div>
+
+                <a href="/UTS_Sistr_Kelompok_4_Assignment.postman_collection.json" download class="btn btn-sm btn-outline" title="Unduh Koleksi Postman">
+                    📮 Postman
+                </a>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="lms-container">
+
+            <!-- ================= TAB 1: DAFTAR TUGAS (ASSIGNMENTS) ================= -->
+            <section id="tab-assignments" class="tab-pane active">
+                <!-- COURSE FILTER CAROUSEL / CARDS -->
+                <div class="course-filter-strip">
+                    <div class="filter-chip active" onclick="filterByCourse('ALL')">
+                        <div class="chip-title">Semua Tugas</div>
+                        <div class="chip-meta" id="stat-all-count">5 Tugas Aktif</div>
+                    </div>
+                    <div class="filter-chip chip-course-301" onclick="filterByCourse('PTIK301')">
+                        <div class="chip-badge">PTIK301</div>
+                        <div class="chip-title">Sistem Terdistribusi</div>
+                        <div class="chip-meta">3 SKS • Kelompok 3 Verified</div>
+                    </div>
+                    <div class="filter-chip chip-course-302" onclick="filterByCourse('PTIK302')">
+                        <div class="chip-badge">PTIK302</div>
+                        <div class="chip-title">Pemrograman Web</div>
+                        <div class="chip-meta">3 SKS • Kelompok 3 Verified</div>
+                    </div>
+                    <div class="filter-chip chip-course-303" onclick="filterByCourse('PTIK303')">
+                        <div class="chip-badge">PTIK303</div>
+                        <div class="chip-title">Basis Data</div>
+                        <div class="chip-meta">3 SKS • Kelompok 3 Verified</div>
+                    </div>
+                </div>
+
+                <!-- ASSIGNMENT TOOLBAR -->
+                <div class="assignment-toolbar">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="search-input" placeholder="Cari nama tugas atau deskripsi materi..." oninput="fetchAssignments()">
+                    </div>
+
+                    <div class="toolbar-actions">
+                        <div class="view-toggle">
+                            <button class="toggle-btn active" id="btn-view-cards" onclick="setViewMode('cards')" title="Tampilan Kartu LMS">🔲 Kartu</button>
+                            <button class="toggle-btn" id="btn-view-table" onclick="setViewMode('table')" title="Tampilan Tabel Ringkas">📑 Tabel</button>
+                        </div>
+                        <button class="btn btn-primary" onclick="showCreateModal()">
+                            <span>+ Buat Tugas Baru (Dosen)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ASSIGNMENTS CONTAINER (CARDS OR TABLE) -->
+                <div id="assignments-cards-container" class="assignments-grid">
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Memuat daftar tugas dari database Kelompok 4...</p>
+                    </div>
+                </div>
+
+                <div id="assignments-table-container" class="table-container" style="display: none;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Mata Kuliah (K3)</th>
+                                <th>Judul Tugas</th>
+                                <th>Tenggat Waktu</th>
+                                <th>Poin</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assignment-table-body">
+                            <tr>
+                                <td colspan="7" class="loading-cell">Memuat data tabel...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ================= TAB 2: MATA KULIAH (KELOMPOK 3) ================= -->
+            <section id="tab-courses" class="tab-pane">
+                <div class="card lms-card">
+                    <div class="card-head">
+                        <div>
+                            <h2>📚 Katalog Mata Kuliah Terintegrasi (Kelompok 3 Course Service)</h2>
+                            <p class="subtext">
+                                Data mata kuliah ditarik langsung dari service <strong>Kelompok 3 (Port 8103)</strong>.
+                                Saat Dosen membuat tugas baru di Kelompok 4, kode mata kuliah divalidasi ke Kelompok 3.
+                            </p>
+                        </div>
+                        <button class="btn btn-secondary" onclick="fetchLiveCoursesFromK3()">
+                            🔄 Tarik Live Data (GET /api/courses)
+                        </button>
+                    </div>
+
+                    <div class="courses-grid" id="courses-catalog-container">
+                        <div class="course-card">
+                            <div class="course-header">
+                                <span class="badge badge-group">PTIK301</span>
+                                <span class="badge-credits">3 SKS</span>
+                            </div>
+                            <h3>Sistem Terdistribusi</h3>
+                            <p class="course-desc">Mempelajari komunikasi socket TCP/UDP, RPC, RESTful microservices, API Gateway, dan konsistensi data terdistribusi.</p>
+                            <div class="course-footer">
+                                <span class="sync-status online">● Terverifikasi Kelompok 3</span>
+                                <button class="btn btn-sm btn-outline" onclick="filterByCourse('PTIK301')">Lihat Tugas</button>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-header">
+                                <span class="badge badge-group">PTIK302</span>
+                                <span class="badge-credits">3 SKS</span>
+                            </div>
+                            <h3>Pemrograman Web</h3>
+                            <p class="course-desc">Pengembangan antarmuka Single Page Application (SPA), penanganan CORS, integrasi API client-server, dan otentikasi JWT.</p>
+                            <div class="course-footer">
+                                <span class="sync-status online">● Terverifikasi Kelompok 3</span>
+                                <button class="btn btn-sm btn-outline" onclick="filterByCourse('PTIK302')">Lihat Tugas</button>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-header">
+                                <span class="badge badge-group">PTIK303</span>
+                                <span class="badge-credits">3 SKS</span>
+                            </div>
+                            <h3>Basis Data</h3>
+                            <p class="course-desc">Pemodelan relasional, normalisasi 3NF, optimasi indeks SQL, dan manajemen transaksi database ACID.</p>
+                            <div class="course-footer">
+                                <span class="sync-status online">● Terverifikasi Kelompok 3</span>
+                                <button class="btn btn-sm btn-outline" onclick="filterByCourse('PTIK303')">Lihat Tugas</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= TAB 3: KONEKSI JARINGAN TERDISTRIBUSI ================= -->
+            <section id="tab-network" class="tab-pane">
+                <!-- TOPOLOGY DIAGRAM -->
+                <div class="card lms-card topology-card">
+                    <div class="card-head">
+                        <div>
+                            <h2>🌐 Topologi Alur Layanan Terdistribusi (Arsitektur UTS)</h2>
+                            <p class="subtext">Status pemetaan live komunikasi inter-service pada jaringan lokal</p>
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="pingAllServices()">⚡ Cek Semua Koneksi</button>
+                    </div>
+
+                    <div class="topology-grid">
+                        <div class="topology-box top-monitoring">
+                            <div class="node-badge">Kelompok 7</div>
+                            <h3>Monitoring Service</h3>
+                            <p class="node-endpoint">GET /health</p>
+                            <div class="status-indicator">
+                                <span class="dot pulse-blue"></span> Memeriksa kesehatan layanan tiap 5 detik
+                            </div>
+                        </div>
+
+                        <div class="flow-horizontal">
+                            <div class="node-box">
+                                <div class="node-badge">Client</div>
+                                <h4>Postman / Web</h4>
+                                <div class="node-ip">Laptop Penguji</div>
+                            </div>
+                            <div class="arrow-connector">→</div>
+
+                            <div class="node-box" id="node-k1">
+                                <div class="node-badge">Kelompok 1</div>
+                                <h4>API Gateway</h4>
+                                <div class="node-ip" id="ip-k1">http://127.0.0.1:8101</div>
+                                <div class="badge-mini wait" id="badge-k1">Standby</div>
+                            </div>
+                            <div class="arrow-connector">→</div>
+
+                            <div class="node-box" id="node-k3">
+                                <div class="node-badge">Kelompok 3</div>
+                                <h4>Course Service</h4>
+                                <div class="node-ip" id="ip-k3">http://10.194.169.45:8103</div>
+                                <div class="badge-mini wait" id="badge-k3">Standby</div>
+                            </div>
+                            <div class="arrow-connector">→</div>
+
+                            <div class="node-box node-active" id="node-k4">
+                                <div class="node-badge current">KITA (Kelompok 4)</div>
+                                <h4>Assignment Service</h4>
+                                <div class="node-ip">Port 8104 / 4000</div>
+                                <div class="badge-mini active">ACTIVE</div>
+                            </div>
+                            <div class="arrow-connector">→</div>
+
+                            <div class="node-box" id="node-k5">
+                                <div class="node-badge">Kelompok 5</div>
+                                <h4>Submission / File</h4>
+                                <div class="node-ip" id="ip-k5">http://127.0.0.1:8105</div>
+                                <div class="badge-mini wait" id="badge-k5">Standby</div>
+                            </div>
+                            <div class="arrow-connector">→</div>
+
+                            <div class="node-box node-k6">
+                                <div class="node-badge">Kelompok 6</div>
+                                <h4>Notification</h4>
+                                <div class="node-ip">Event Triggered</div>
+                                <div class="badge-mini wait">Standby</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONFIGURATION FORM -->
+                <div class="card lms-card">
+                    <div class="card-head">
+                        <div>
+                            <h2>⚙️ Konfigurasi Alamat IP Perangkat Teman (Wi-Fi/LAN)</h2>
+                            <p class="subtext">Masukkan IP Wi-Fi perangkat laptop Kelompok 3 dan 5 saat demo di kelas/lab.</p>
+                        </div>
+                    </div>
+
+                    <form id="config-form" class="config-grid" onsubmit="saveConfig(event)">
+                        <div class="form-group">
+                            <label>
+                                <strong>Kelompok 3 (Course Service URL):</strong>
+                                <span class="port-hint">Port 8103</span>
+                            </label>
+                            <div class="input-with-button">
+                                <input type="text" id="cfg-k3" placeholder="http://10.194.169.45:8103" required>
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="pingTarget('k3')">Ping K3</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <strong>Kelompok 5 (Submission Service URL):</strong>
+                                <span class="port-hint">Port 8105 / api.php</span>
+                            </label>
+                            <div class="input-with-button">
+                                <input type="text" id="cfg-k5" placeholder="http://192.168.x.x:8105" required>
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="pingTarget('k5')">Ping K5</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <strong>Kelompok 1 (API Gateway URL):</strong>
+                                <span class="port-hint">Port 8101</span>
+                            </label>
+                            <div class="input-with-button">
+                                <input type="text" id="cfg-k1" placeholder="http://192.168.x.x:8101" required>
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="pingTarget('k1')">Ping K1</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group toggle-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="cfg-mock" checked>
+                                <span><strong>Mode Toleransi (Smart Fallback):</strong> Jika laptop teman kelompok 3 atau 5 belum siap/offline, sistem otomatis menyimulasikan data matkul (PTIK301/302) & submission agar demo ke dosen tetap lancar 100%!</span>
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Simpan IP Perangkat</button>
+                            <a href="/registrasi-assignment-LINTAS-LAPTOP.json" download class="btn btn-secondary">
+                                📄 Unduh File Registrasi untuk Gateway (K1)
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ================= TAB 4: KONSOL API & TESTING ================= -->
+            <section id="tab-console" class="tab-pane">
+                <div class="two-column-layout">
+                    <div class="col-main">
+                        <div class="card lms-card console-card">
+                            <div class="card-head">
+                                <div>
+                                    <h2>⚡ Live API Response Console</h2>
+                                    <p class="subtext">Lihat respons JSON riil langsung dari endpoint backend PHP</p>
+                                </div>
+                                <span class="pill-badge" id="last-method-pill">STANDBY</span>
+                            </div>
+                            <div class="endpoint-url-bar" id="endpoint-url-display">
+                                GET /health
+                            </div>
+                            <div class="json-viewer-wrapper">
+                                <pre id="json-output">// Klik tombol pengujian API di sebelah kanan untuk melihat response JSON riil.</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-side">
+                        <div class="card lms-card">
+                            <h3>Uji Endpoint Cepat</h3>
+                            <div class="quick-api-test-buttons-vertical">
+                                <button class="btn btn-secondary btn-full" onclick="testEndpoint('GET', '/health')">
+                                    <span>GET</span> /health (Kelompok 7)
+                                </button>
+                                <button class="btn btn-secondary btn-full" onclick="testEndpoint('GET', '/api/assignments')">
+                                    <span>GET</span> /api/assignments (Semua Tugas)
+                                </button>
+                                <button class="btn btn-secondary btn-full" onclick="testEndpoint('GET', '/api/assignments?course_id=PTIK301')">
+                                    <span>GET</span> /api/assignments?course_id=PTIK301
+                                </button>
+                                <button class="btn btn-secondary btn-full" onclick="testEndpoint('GET', '/api/assignments/ASN-001')">
+                                    <span>GET</span> /api/assignments/ASN-001
+                                </button>
+                                <button class="btn btn-secondary btn-full" onclick="testEndpoint('GET', '/api/assignments/ASN-001/submissions')">
+                                    <span>GET</span> Submissions dari Kelompok 5
+                                </button>
+                                <button class="btn btn-secondary btn-full" onclick="fetchLiveCoursesFromK3()">
+                                    <span>GET</span> Live Matkul dari Kelompok 3
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card lms-card guide-card">
+                            <h3>Petunjuk Penilaian UTS</h3>
+                            <ul class="guide-list">
+                                <li><strong>Minimal 3 Fungsi API:</strong> GET (List & Detail), POST (Tambah Tugas), PUT (Update), dan DELETE.</li>
+                                <li><strong>Alur K3 ke K4:</strong> Validasi kode mata kuliah ke Course Service Kelompok 3.</li>
+                                <li><strong>Alur K4 ke K5:</strong> Pengambilan & Pengunggahan berkas tugas mahasiswa ke Kelompok 5.</li>
+                                <li><strong>Alur K5 ke K6:</strong> Notifikasi otomatis dipicu oleh Kelompok 5 ke Kelompok 6.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- MODAL CREATE ASSIGNMENT (DOSEN) -->
+        <div class="modal-overlay" id="create-modal">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <div>
+                        <span class="badge badge-group">MODE DOSEN</span>
+                        <h3>Tambah Tugas Kuliah Baru (POST)</h3>
+                    </div>
+                    <button class="close-btn" onclick="closeCreateModal()">×</button>
+                </div>
+                <form id="create-assignment-form" onsubmit="submitCreateAssignment(event)">
+                    <div class="form-group">
+                        <label>Pilih Mata Kuliah (Terkoneksi ke Kelompok 3):</label>
+                        <select id="create-course-id" required>
+                            <option value="PTIK301">PTIK301 — Sistem Terdistribusi (3 SKS)</option>
+                            <option value="PTIK302">PTIK302 — Pemrograman Web (3 SKS)</option>
+                            <option value="PTIK303">PTIK303 — Basis Data (3 SKS)</option>
+                        </select>
+                        <small class="hint-text">Kelompok 4 akan memverifikasi kode mata kuliah ini ke Kelompok 3 (GET /api/courses).</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Judul Tugas:</label>
+                        <input type="text" id="create-title" placeholder="Contoh: Tugas 3: Socket Programming Client-Server" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Petunjuk & Deskripsi Pengerjaan:</label>
+                        <textarea id="create-description" rows="3" placeholder="Tuliskan instruksi tugas secara rinci..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Batas Waktu (Deadline):</label>
+                            <input type="datetime-local" id="create-due-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Poin Maksimal:</label>
+                            <input type="number" id="create-points" value="100" min="1" max="100" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan & Verifikasi ke K3 (POST)</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL SUBMISSION / KUMPULKAN TUGAS (KELOMPOK 5 INTEGRATION) -->
+        <div class="modal-overlay" id="submissions-modal">
+            <div class="modal-card modal-lg">
+                <div class="modal-header">
+                    <div>
+                        <div class="badge-row">
+                            <span class="badge badge-service">INTEGRASI KELOMPOK 5 & 6</span>
+                            <span class="badge badge-group" id="modal-course-badge">PTIK301</span>
+                        </div>
+                        <h3 id="sub-modal-title">Pengumpulan Tugas</h3>
+                    </div>
+                    <button class="close-btn" onclick="closeSubmissionsModal()">×</button>
+                </div>
+
+                <!-- ALUR PIPELINE INDIKATOR -->
+                <div class="pipeline-flow-banner">
+                    <span class="step-pill">1. Mahasiswa Upload</span>
+                    <span class="step-arrow">➔</span>
+                    <span class="step-pill active">2. Kelompok 4 (Assignment)</span>
+                    <span class="step-arrow">➔</span>
+                    <span class="step-pill active">3. Kelompok 5 (File & DB)</span>
+                    <span class="step-arrow">➔</span>
+                    <span class="step-pill">4. Kelompok 6 (Notifikasi)</span>
+                </div>
+
+                <!-- FORM UPLOAD MAHASISWA -->
+                <div class="submission-form-box">
+                    <h4>📤 Form Pengumpulan Tugas (POST ke Kelompok 5)</h4>
+                    <form id="upload-submission-form" onsubmit="submitStudentWork(event)">
+                        <input type="hidden" id="sub-assignment-id">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>NIM Mahasiswa (student_id):</label>
+                                <input type="text" id="sub-student-id" placeholder="2209106001" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Mahasiswa:</label>
+                                <input type="text" id="sub-student-name" placeholder="Ahmad Fathir" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Pilih Berkas Tugas (.pdf, .zip, .rar):</label>
+                            <input type="file" id="sub-file" accept=".pdf,.zip,.rar,.tar.gz,.doc,.docx" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full" style="margin-top: 10px;">
+                            🚀 Kirim Berkas ke Kelompok 5 & Trigger Notifikasi Kelompok 6
+                        </button>
+                    </form>
+                </div>
+
+                <!-- DAFTAR SUBMISSION YANG SUDAH MASUK -->
+                <div class="submissions-list-section">
+                    <h4>📑 Berkas Pengumpulan yang Diterima Kelompok 5</h4>
+                    <div id="sub-modal-body">
+                        <p class="loading-cell">Mengambil data submission dari Kelompok 5...</p>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeSubmissionsModal()">Tutup</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
