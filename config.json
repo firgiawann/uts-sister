@@ -4,6 +4,6 @@
     "version": "1.0.0",
     "kelompok_1_gateway_url": "http://127.0.0.1:8101",
     "kelompok_3_course_url": "http://10.194.169.45:8103",
-    "kelompok_5_submission_url": "http://127.0.0.1:8105",
+    "kelompok_5_submission_url": "http://10.194.169.208/submission/api.php",
     "use_mock_fallback": true
 }
