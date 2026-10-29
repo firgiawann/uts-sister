@@ -68,13 +68,16 @@ function getRequestBody(): array {
 
 // ---------------- ROUTING TABLE ----------------
 
-// Kelompok 7: Monitoring Service
-if ($uri === '/health' && $method === 'GET') {
+$uriClean = rtrim($uri, '/');
+if (empty($uriClean)) $uriClean = '/';
+
+// Kelompok 7: Monitoring Service (/health & /api/health)
+if (($uriClean === '/health' || $uriClean === '/api/health') && $method === 'GET') {
     HealthController::check();
 }
 
 // Config Endpoints
-if ($uri === '/api/config') {
+if ($uriClean === '/api/config') {
     if ($method === 'GET') {
         ConfigController::get();
     } elseif ($method === 'POST') {
@@ -82,8 +85,8 @@ if ($uri === '/api/config') {
     }
 }
 
-// Assignment Endpoints
-if ($uri === '/api/assignments') {
+// Assignment Endpoints (Mendukung plural /api/assignments & singular /api/assignment)
+if ($uriClean === '/api/assignments' || $uriClean === '/api/assignment') {
     if ($method === 'GET') {
         AssignmentController::index();
     } elseif ($method === 'POST') {
@@ -92,7 +95,7 @@ if ($uri === '/api/assignments') {
 }
 
 // Helper route: Ambil daftar mata kuliah langsung dari Kelompok 3 (Live Course List)
-if ($uri === '/api/external/courses' && $method === 'GET') {
+if ($uriClean === '/api/external/courses' && $method === 'GET') {
     $cfg = Config::get();
     $target = rtrim($cfg['kelompok_3_course_url'], '/') . '/api/courses';
     $res = ExternalService::httpGet($target, 2);
@@ -113,8 +116,8 @@ if ($uri === '/api/external/courses' && $method === 'GET') {
     exit;
 }
 
-// Submissions for specific assignment: /api/assignments/{id}/submissions
-if (preg_match('#^/api/assignments/([^/]+)/submissions/?$#', $uri, $matches)) {
+// Submissions for specific assignment: /api/assignments/{id}/submissions atau /api/assignment/{id}/submissions
+if (preg_match('#^/api/assignments?/([^/]+)/submissions?/?$#', $uri, $matches)) {
     $id = urldecode($matches[1]);
     if ($method === 'GET') {
         AssignmentController::getSubmissions($id);
@@ -123,8 +126,8 @@ if (preg_match('#^/api/assignments/([^/]+)/submissions/?$#', $uri, $matches)) {
     }
 }
 
-// Single Assignment detail/update/delete: /api/assignments/{id}
-if (preg_match('#^/api/assignments/([^/]+)/?$#', $uri, $matches)) {
+// Single Assignment detail/update/delete: /api/assignments/{id} atau /api/assignment/{id}
+if (preg_match('#^/api/assignments?/([^/]+)/?$#', $uri, $matches)) {
     $id = urldecode($matches[1]);
     if ($method === 'GET') {
         AssignmentController::show($id);

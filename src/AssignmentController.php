@@ -151,9 +151,10 @@ class AssignmentController {
         }
 
         $studentId = $_POST['student_id'] ?? ($_GET['student_id'] ?? '2209106001');
+        $studentName = $_POST['student_name'] ?? ($_GET['student_name'] ?? 'Mahasiswa');
         $fileData = $_FILES['file'] ?? null;
 
-        $result = ExternalService::forwardSubmissionToKelompok5($id, $studentId, $fileData);
+        $result = ExternalService::forwardSubmissionToKelompok5($id, $studentId, $fileData, $studentName);
 
         self::jsonResponse([
             'status' => 'success',

@@ -5,16 +5,11 @@ class Config {
     private static array $cachedConfig = [];
 
     public static function get(): array {
-        if (!empty(self::$cachedConfig)) {
-            return self::$cachedConfig;
-        }
-
         if (file_exists(self::$configFile)) {
             $raw = file_get_contents(self::$configFile);
             $data = json_decode($raw, true);
             if (is_array($data)) {
-                self::$cachedConfig = $data;
-                return self::$cachedConfig;
+                return $data;
             }
         }
 

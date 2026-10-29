@@ -134,4 +134,34 @@ class Storage {
         }
         return false;
     }
+
+    private static string $submissionsFile = __DIR__ . '/../data/submissions.json';
+
+    public static function loadSubmissions(): array {
+        if (!file_exists(self::$submissionsFile)) {
+            return [];
+        }
+        $raw = file_get_contents(self::$submissionsFile);
+        $data = json_decode($raw, true);
+        return is_array($data) ? $data : [];
+    }
+
+    public static function saveSubmission(array $submission): void {
+        $subs = self::loadSubmissions();
+        $subs[] = $submission;
+        $dir = dirname(self::$submissionsFile);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        file_put_contents(self::$submissionsFile, json_encode($subs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    public static function getSubmissionsByAssignment(string $assignmentId): array {
+        $subs = self::loadSubmissions();
+        $numericId = preg_match('/\d+/', $assignmentId, $m) ? (int)$m[0] : null;
+        return array_values(array_filter($subs, function ($it) use ($assignmentId, $numericId) {
+            $aid = $it['assignment_id'] ?? '';
+            return strcasecmp((string)$aid, (string)$assignmentId) === 0 || ($numericId !== null && intval($aid) === $numericId);
+        }));
+    }
 }

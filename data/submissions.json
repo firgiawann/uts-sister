@@ -1,0 +1,35 @@
+[
+    {
+        "submission_id": 11,
+        "assignment_id": "ASN-001",
+        "student_id": "2209106001",
+        "student_name": "Ahmad Fathir",
+        "file_name": "tugas_2209106001.pdf",
+        "file_path": "uploads/1793257302_tugas_2209106001.pdf",
+        "submitted_at": "2026-10-29 15:01:42",
+        "status": "SUBMITTED",
+        "source": "KELOMPOK_5_LIVE"
+    },
+    {
+        "submission_id": 12,
+        "assignment_id": "ASN-001",
+        "student_id": "2209106042",
+        "student_name": "Budi Santoso",
+        "file_name": "tugas_2209106042.pdf",
+        "file_path": "uploads/1793257370_tugas_2209106042.pdf",
+        "submitted_at": "2026-10-29 15:02:50",
+        "status": "SUBMITTED",
+        "source": "KELOMPOK_5_LIVE"
+    },
+    {
+        "submission_id": 85,
+        "assignment_id": "ASN-001",
+        "student_id": "2209106099",
+        "student_name": "Firgiawan",
+        "file_name": "tugas_firgiawan_k4.pdf",
+        "file_path": "uploads/1793257606_tugas_firgiawan_k4.pdf",
+        "submitted_at": "2026-10-29 07:06:46",
+        "status": "SUBMITTED",
+        "source": "MOCK_FALLBACK"
+    }
+]
